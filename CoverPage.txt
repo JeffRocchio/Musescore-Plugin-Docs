@@ -1,0 +1,37 @@
+This is a guide for the MuseScore 3.0 plugin implementation.
+
+## Documentation
+
+Formal, current, documentation is available in [Doxygen format](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/index.html).
+
+The pages here may provide supplemental information, issue work-arounds and code examples to the extent that community members working on plugins document their learnings and experiences here.
+
+
+## Seeking Help
+
+If you are unable to obtain what you need from either the Doxygen documentation, or these pages, then please use the [Plugins Forum Section](https://musescore.org/en/forum/443) to ask a question.
+
+And if you are a community member it would be great if you could contribute to this documentation once you have resolved your question or issue.
+
+
+## Element Properties
+
+Among the first challenges of learning how to operate on score elements within a plugin is the challenge of understanding the properties of the various elements of a score that are available to your plugin code. The starting place for that is the formal Doxygen documentation. However, that is often a bit too terse to be sufficient and does not contain any code examples to guide you. You may find the following page in this handbook to be useful: [Use Case - Element Explorer](https://musescore.org/en/node/320499) 
+
+## Code Examples
+
+The currently available documentation is in great need of example code. Your best source of example code is the [plugin library](https://musescore.org/en/plugins) - this is a repository of plugins created by the community. Studying a plugin that may relate to what you are attempting to achieve is often the best pathway to success. Of course, coding styles and documentation comments in those plugins will vary; but you can seek help from the author via a comment to their plugin's library's entry and/or asking in the plugin forum.
+
+## QML
+
+Plugins are written in 'QtQuick' / 'QML', which is a development framework maintained by the [Qt Company](https://www.qt.io/company). For MuseScore 3.x you should assume Qt version 5.9. QML is essentially javascript with a user-interface framework layered on top. The scripting portion of QML purports to be ECMA6 compliant; but you'd see in the QT forums that there are a few gaps to the standard. (For example, in Qt 5.9 the ECMA6 Arrow Function is not available.)
+
+## References
+
+[Formal Doxygen Plugin Documentation](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/index.html)
+
+[Plugins Forum](https://musescore.org/en/forum/443)
+
+[Plugin Library](https://musescore.org/en/plugins)
+
+[Qt Quick Documentation](https://doc.qt.io/qt-5/qtquick-index.html)
