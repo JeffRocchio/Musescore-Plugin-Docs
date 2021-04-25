@@ -1,0 +1,40 @@
+Use Case: Changing an Existing Note's Pitch
+
+## Background
+
+What follows are my own learnings while coding a plugin that transforms an existing TAB staff to the TAB numbering convention used by Mountain Dulcimer players. This convention is semi-diatonic, meaning that the fret numbering is not chromatically sequential. For example, chromatically fret #2 would be two half-steps above the open string tuning. On a Mountain Dulcimer fret #2 is 4 half-steps above the open tuning. So to transform the chormatic TAB to Mtn Dulcimer TAB I walk the TAB staff and reduce the pitch of each note so that Musescore, internally, assigns the note to the corresponding Mtn Dulcimer fret number.
+
+## Key learnings
+
+One might think that there are only 2-degrees of freedom in assigning a fret# - that is, given a pitch and a string there can be only one possible fret# that can be assigned. However, it turns out that you must specify *all* of the following parameters to successfully change the displayed note. Further - if you do specify all the parameters except for the .tpc1 and .tpc2 values then upon your plugin's completion the modified score may look fine; however, after saving the score and reopening it you will likely find that the changes your plugin made were not saved (the reopened score will show a mix of reverted notes along with random errors). So you *must* set each of the below parameters:
+
+<qml>note.pitch
+note.fret
+note.string
+note.tpc1
+note.tpc2
+</qml>
+&nbsp;
+## Procedure to Determine New .tpc to Match New MIDI Pitch Value
+
+1. In your code define a two-dimensional array that contains Musescore's tpc mapping. The 2D array is set up as rows, which represents each note's pitch-class, i.e., C, C#, D, D#, E, F, F#, G, G#, A, A#, B, B#. Then each row has three columns which represent each of the three possible variations on how a given note could be represented. E.g., a C could be represented as a B# (tpc value 26), a C (tpc value 14), or a Dbb (tpc value 2). Note that there is a null value in the middle column of pitch class 8, where G# and Ab are the same note; but in this one case there is no 3rd alternative representation. In your array fill this entry with the value ‘NaN.’ See: [Tonal Pitch Class Mapping](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/tpc.html).
+
+1. Given a TAB note to convert, step-1 is to find which row of your tpc mapping array the existing note’s tpc value matches up to. In my plugin code this is done via brute force, using two nested for loops to search row/column-wise through the tpc array for a value that matches the existing note’s note.tpc value.
+
+1. You are going to change the note's pitch by some number of steps from the original pitch. Call this amount the "offset" amount. So in my example I want existing fret# 2 to become fret# 1, so I will reduce the note's pitch by 1. So my offset is 1.
+
+1. Given the tpc array row number, the offset value is then used to move backwards in the tpc array that many rows. To do this you have to think of the array as a closed circle. So when falling off the array into negative index values you have to force a loop-back to the bottom of the array. Likewise, when falling off the end of the array into index values greater than the length of the array you have to loop-back to the start of the array. When you have performed this operation you now have the new pitch class (i.e., the row index) that matches up to your new MIDI pitch value for the note.
+
+1. Now that you have the offset row you can determine which column is appropriate for your re-pitched note. In my case, for TAB notes, I simply use the original tpc array column since, for TAB, we aren’t actually making any use of the tpc pitch-spelling so we don’t have to worry about that. **EXCEPT for one condition** - that ‘NA’ condition for G#. We could be moving back to the G#/Ab row, and be set on column 1, which is ‘NA’ - invalid. So we have to sense for this, and if detected, just set the tpc to the G# (that is, value 22).
+
+1. Finally, with your new .tpc value you can write that to the <qml>note.tpc1</qml> and <qml>note.tpc2</qml> parameters. Note that you need to write to those two, but you don't need to write it to the (unnumbered) <qml>note.tpc</qml> parameter, internally Musescore does seem to update that parameter automatically. In my case I am not making any use of Concert Pitch, so I simply supply the same value to both .tp1 and .tpc2.
+
+## Code Example
+
+[MtnDulcimer-TransCromoTABtoDiatonic_ver1.0.qml](https://github.com/JeffRocchio/musescore-plugin_Chromo2DiatonicTab/blob/main/MtnDulcimer-TransCromoTABtoDiatonic_ver0.1.qml)
+
+## References
+
+[Tonal Pitch Class Mapping](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/tpc.html).
+
+[Issue: Changes to TAB made by PlugIn not saved](https://musescore.org/en/node/316484).

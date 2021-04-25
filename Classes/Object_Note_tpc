@@ -1,0 +1,27 @@
+tpc, tpc1, tpc2 (Tonal Pitch Class)
+
+In addition to what is described in the Doxygen documentation, please note the following:
+
+The Tonal Pitch Class (tpc) parameters of the Note object are used to specify which of the possible enharmonic note spelling variations to display in the score. Based on context, a given note's [pitch class](http://openmusictheory.com/pitches.html) may be shown in two or three different ways. For example, a C-natural could be shown, enharmonically, as a B#. To specify which note spelling to use the note object makes use of the three parameters: tpc, tpc1 and tpc2. These parameters store an integer value that maps to a note spelling. See reference below for the mapping table. For example, if middle-C is to be shown as a B# it's Note.pitch value would be 60, and the tpc value would be 26.
+
+## Why are there three tpc parameters? 
+
+I honestly don't have the expertise to be able to answer this with complete confidence. It would appear that tpc1 ('concert pitch') and tpc2 ('transposing pitch') are used to specify potentially different values for different display/print contexts. If the score property *'Display in concert pitch'* is checked, then tpc1 is used. Otherwise tpc2 is used. As to tpc (unnumbered) I would guess that it gets dynamically updated internally by Musescore as the *Display in concert pitch* option is turned on/off so that it represents the current context tpc to use as the moment. However, the formal plugin documentation says this parameter is writable, which makes no sense to me if my guess about this is correct.
+
+## Why care? 
+
+One reason, obviously, is that you may need to obtain the intended note spelling within your plugin. 
+
+Another, perhaps more important, reason is that if you are modifying note pitches in a score you *must* also set values for tpc1 and tpc2. If you fail to set those values the modified score may look fine upon plugin completion. However, after saving the score and reopening it you will likely find that the note pitch changes your plugin made were not saved (the reopened score will show a mix of reverted notes along with random errors). Also note that if you are changing a note's pitch on a TAB staff you must set all of .ptich, .string, .fret, .tpc1, and .tpc2. From my experience it appears that you do not need to explicitly set the (unumbered) .tpc value.
+
+
+## References
+
+[Use Case: Changing an Existing Note's Pitch](https://musescore.org/en/node/320265)
+
+[Tonal Pitch Class Mapping](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/tpc.html).
+
+[Issue: Changes to TAB made by PlugIn not saved](https://musescore.org/en/node/316484).
+
+[Pitches and octave designations, Enharmonic equivalence](http://openmusictheory.com/pitches.html)
+

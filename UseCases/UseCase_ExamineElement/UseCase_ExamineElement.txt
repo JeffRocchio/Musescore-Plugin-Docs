@@ -1,0 +1,22 @@
+Use Case: Examine an Element on the Score
+
+## Background
+
+I have found it helpful to be able to click on some item in a score and examine all of it's properties. For example, what are the available properties, and their actual values, for that rest in measure 2? Or what can my plugin obtain from the time signature element? Etc. So I created a plugin that let's me see the key -> value pairs for any element I have selected on a score.
+
+## Usage 
+
+1. Make sure you run the plugin from Musescore's 'Plugin Creator...' as the results are provided using <qml>console.log</qml>statements.
+
+2. With the plugin loaded into the plugin creator's window, single-click on any item in the score (you can actually use the ctrl key to select several items at once if you wish).
+
+3. From the plugin creator, run the plugin. You will get a list of all the available properties, and their current values, for each of the selected items. Note that this plugin is *not* crawling embedded objects. So, for example, on a note element you'd see the staff property, and it will look something like this: 'staff : Ms::PluginAPI::Staff(0xab55410)'. That is telling you that in your code you would be able to access that object and it's properties and methods. Of course, you should also be able to see this from the formal [Doxygen Documentation](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/annotated.html) as well.
+
+## The Plugin
+
+Obtain plugin from [_ver1.0.qml]()
+
+## References
+
+[Formal Doxygen Plugin Documentation](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/annotated.html)
+

@@ -1,0 +1,5 @@
+Note
+
+This section contains additional information related to the Note object.
+
+[Formal Doxygen Documentation for Note](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/class_ms_1_1_plugin_a_p_i_1_1_note.html)
