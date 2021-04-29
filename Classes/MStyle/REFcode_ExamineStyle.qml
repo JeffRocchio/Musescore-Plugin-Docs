@@ -16,7 +16,7 @@
 
 
 //------------------------------------------------------------------------------
-//  1.0: 04/24/2021 | First created
+//  1.0: 04/28/2021 | First created
 //------------------------------------------------------------------------------
 
 // Am assuming QtQuick version 5.9 for Musescore 3.x plugins.
@@ -101,35 +101,6 @@ MuseScore {
 		
 	} // end QtObject oDebug
 	
-	function assessValidity(oCursor) {
-		//   PURPOSE: Prior to attempting any transformation, see 
-		//if it appears that everything is valid.
-		//   RETURNS:
-		//		1.	true if all is well, false if not. And if true:
-		//		2.	If false, the oUserMessage object will contain
-		//an error number which can be used to inform the user.
-		
-		var bDEBUG = true;
-		bDEBUG = false;
-
-		if(bDEBUG) oDebug.fnEntry(assessValidity.name);
-		
-					//	Do we have a selection?
-		if(bDEBUG) {
-			console.log("---- Inspecting the Selection ---|");
-			console.log("---- ---- # of Elements Selected <", curScore.selection.elements.length, ">");
-			console.log("---- ---- Range or no Range? <", curScore.selection.isRange, ">");
-		}
-		if (curScore.selection.elements.length==0) {
-			oUserMessage.setError(1);
-			return false;
-		}
-		
-		if(bDEBUG) oDebug.fnExit(assessValidity.name);
-		return true;
-		
-	} // end assessValidity()
-	
 	function showObject(oObject) {
 		//	PURPOSE: Lists all key -> value pairs to the console.
 		//	NOTE: To reduce clutter I am filtering out any 
@@ -152,61 +123,6 @@ MuseScore {
 		}
 	}
 	
-	function showStaffObj(oObject) {
-		//	PURPOSE: If there is a staff object present in the 
-		//current element, explode it's properties out.
-		
-		if (oObject.staff != null) {
-			var objToExplode = oObject.staff;
-			if (Object.keys(objToExplode).length >0) {
-				console.log("");
-				console.log("---- ---- Staff Object :");
-				Object.keys(objToExplode)
-				.filter(function(key) {
-					return objToExplode[key] != null;
-				})
-				.sort()
-				.forEach(function eachKey(key) {
-					console.log("---- ---- ---- ", key, " : <", objToExplode[key], ">");
-				});
-			}
-
-		}
-		console.log("---- ---- ");
-	}
-	
-	function examineElement(oElementsList) {
-		//	PURPOSE: List to console all key-value pairs of the 
-		//user's selected elements.
-
-		var bDEBUG = true;
-		bDEBUG = false;
-		
-		if(bDEBUG) oDebug.fnEntry(examineElement.name);
-		
-		if (bDEBUG) console.log("---- | Entering element inspection loop ---->>")
-		if (bDEBUG) console.log("---- | Number of User Selected Elements <", oElementsList.length, ">");
-		if (bDEBUG) console.log("Type Of oElementsList <", typeof oElementsList, ">");
-		if (bDEBUG) console.log("---- | First Element <", oElementsList[0], ">");
-		
-		console.log("");
-		console.log("---- | Number of Selected Elements to Examine: [", oElementsList.length, "]");
-		console.log("");
-		for (var i=0; i<oElementsList.length; i++) {
-			console.log("------------------------------------------------------------------------");
-			console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
-			console.log("");
-			showObject(oElementsList[i]);
-			showStaffObj(oElementsList[i]);
-			console.log("\n");
-			console.log("---- END Element# [", i, "]");
-			console.log("------------------------------------------------------------------------");
-			console.log("");
-		}
-		
-		if(bDEBUG) oDebug.fnExit(examineElement.name);
-	} // end of examineElement()
-	
 
 //==== PLUGIN RUN-TIME ENTRY POINT =============================================
 
@@ -215,15 +131,16 @@ MuseScore {
 
 		var oCursor = curScore.newCursor()
 		
-		if (!assessValidity (oCursor)) {
-			oUserMessage.popupError();
-		}
-					//	All looks OK, list all selected elements' key -> value pairs
-		else { 
-			examineElement(curScore.selection.elements);
-			if (oUserMessage.getError()) oUserMessage.popupError(); // inform user if lingering errors.
-		}
-
+		showObject(curScore.style);
+		if (oUserMessage.getError()) oUserMessage.popupError(); // inform user if lingering errors.
+		
+		console.log("");
+		console.log("genClef <", curScore.style.value("genClef"), ">");
+		console.log("showMeasureNumber <", curScore.style.value("showMeasureNumber"), ">");
+		console.log("fingeringOffset <", curScore.style.value("fingeringOffset"), ">");
+		console.log("Clefs <", curScore.style.value("Clefs"), ">");
+		
+		console.log("");
 		console.log("********** QUITTING **********");
 		Qt.quit();
 

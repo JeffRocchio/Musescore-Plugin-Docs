@@ -1,22 +1,17 @@
 //=============================================================================
 //  MuseScore Plugin
 //
-//  This plugin will list to the console window the key -> value pairs for 
-//  individual items (elements) selected on a score.
+//  This plugin demonstrates how to add "fingering" text to a specific
+//  note.
 //
-//  IF you intend to examine more than a few elements at once you might want
-//  to modify this to have it write the results out to a text file rather
-//  than the console window.
+//  Unlike Staff Text, a fingering element is a child of one specific note, 
+//  so adding one is just a little bit different than adding staff text.
 //
-//  I use this to examine what properties are available to my plugin for a
-//  given element (e.g., what can I learn about a 'note,' or a 
-//  'time signature')?
-//  
 //=============================================================================
 
 
 //------------------------------------------------------------------------------
-//  1.0: 04/24/2021 | First created
+//  1.0: 04/29/2021 | First created
 //------------------------------------------------------------------------------
 
 // Am assuming QtQuick version 5.9 for Musescore 3.x plugins.
@@ -28,8 +23,8 @@ import MuseScore 3.0
 MuseScore {
 	id: oMuse
 	version:  "1.0"
-	description: "Examine an Element"
-	menuPath: "Plugins.DEV.Examine an Element"
+	description: "Add Fingering Text"
+	menuPath: "Plugins.DEV.Add Fingering Text"
 
 	QtObject { // oUserMessage
 		id: oUserMessage
@@ -45,7 +40,7 @@ MuseScore {
 					//	1:
 		"Nothing Selected - please select 1 or more elements in the score and try again.",
 					//	2:
-		" ",
+		"No note selected - please select a single note and try again,",
 					//	3:
 		" ",
 					//	4:
@@ -114,15 +109,26 @@ MuseScore {
 
 		if(bDEBUG) oDebug.fnEntry(assessValidity.name);
 		
+		var bValid = true;
+		
 					//	Do we have a selection?
 		if(bDEBUG) {
 			console.log("---- Inspecting the Selection ---|");
 			console.log("---- ---- # of Elements Selected <", curScore.selection.elements.length, ">");
 			console.log("---- ---- Range or no Range? <", curScore.selection.isRange, ">");
 		}
+					//	All I want to do is make sure at least one
+					//single note on the score has been selected.
 		if (curScore.selection.elements.length==0) {
 			oUserMessage.setError(1);
-			return false;
+			bValid = false;
+		} 
+		if (bValid) {
+			if(curScore.selection.elements[0].type != Element.NOTE) {
+				oUserMessage.setError(2);
+				bValid = false;
+			}
+			
 		}
 		
 		if(bDEBUG) oDebug.fnExit(assessValidity.name);
@@ -139,6 +145,11 @@ MuseScore {
 		//most of these properties will return 'undefined' as they 
 		//are not all valid for all element types. If you want to see 
 		//this comment out the filter.)
+		//	I have this here only because I often find it useful to
+		//explode out objects as I am working out some puzzle. So
+		//this is just a standard function I have in many of my
+		//experimental plugins. It may, or may not, get used in any
+		//given situation. Generally you can ignore this.
 		
 		if (Object.keys(oObject).length >0) {
 			Object.keys(oObject)
@@ -151,62 +162,6 @@ MuseScore {
 				});
 		}
 	}
-	
-	function showStaffObj(oObject) {
-		//	PURPOSE: If there is a staff object present in the 
-		//current element, explode it's properties out.
-		
-		if (oObject.staff != null) {
-			var objToExplode = oObject.staff;
-			if (Object.keys(objToExplode).length >0) {
-				console.log("");
-				console.log("---- ---- Staff Object :");
-				Object.keys(objToExplode)
-				.filter(function(key) {
-					return objToExplode[key] != null;
-				})
-				.sort()
-				.forEach(function eachKey(key) {
-					console.log("---- ---- ---- ", key, " : <", objToExplode[key], ">");
-				});
-			}
-
-		}
-		console.log("---- ---- ");
-	}
-	
-	function examineElement(oElementsList) {
-		//	PURPOSE: List to console all key-value pairs of the 
-		//user's selected elements.
-
-		var bDEBUG = true;
-		bDEBUG = false;
-		
-		if(bDEBUG) oDebug.fnEntry(examineElement.name);
-		
-		if (bDEBUG) console.log("---- | Entering element inspection loop ---->>")
-		if (bDEBUG) console.log("---- | Number of User Selected Elements <", oElementsList.length, ">");
-		if (bDEBUG) console.log("Type Of oElementsList <", typeof oElementsList, ">");
-		if (bDEBUG) console.log("---- | First Element <", oElementsList[0], ">");
-		
-		console.log("");
-		console.log("---- | Number of Selected Elements to Examine: [", oElementsList.length, "]");
-		console.log("");
-		for (var i=0; i<oElementsList.length; i++) {
-			console.log("------------------------------------------------------------------------");
-			console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
-			console.log("");
-			showObject(oElementsList[i]);
-			showStaffObj(oElementsList[i]);
-			console.log("\n");
-			console.log("---- END Element# [", i, "]");
-			console.log("------------------------------------------------------------------------");
-			console.log("");
-		}
-		
-		if(bDEBUG) oDebug.fnExit(examineElement.name);
-	} // end of examineElement()
-	
 
 //==== PLUGIN RUN-TIME ENTRY POINT =============================================
 
@@ -218,9 +173,29 @@ MuseScore {
 		if (!assessValidity (oCursor)) {
 			oUserMessage.popupError();
 		}
-					//	All looks OK, list all selected elements' key -> value pairs
+					//	OK, we have a selected note, so now let's add 
+					//fingering text.
 		else { 
-			examineElement(curScore.selection.elements);
+			if(curScore.selection.elements[0].type === Element.NOTE) {
+				console.log("");
+				console.log("---- Adding Fingering Text...");
+				var half = newElement(Element.FINGERING);
+				half.text = "FG";
+				half.color = "#aa0000";
+				curScore.selection.elements[0].add(half);
+				//Here's an odd thing - you have to set the x,y offset 
+				//properties **after** you have added the fingering object 
+				//to the note. If you set them prior to adding, like I did
+				//for the color above, they don't seem to have any effect.
+				//I personally cannot explain this difference in behavior.
+				half.offsetX = 2.00;
+				half.offsetY = -0.44;
+			}
+					//	Now let's examine all the properties of the fingering 
+					//text we just added.
+				console.log("");
+				console.log("---- Key->Value pairs of object We just added  || ", half.name, "||");
+				showObject(half);
 			if (oUserMessage.getError()) oUserMessage.popupError(); // inform user if lingering errors.
 		}
 

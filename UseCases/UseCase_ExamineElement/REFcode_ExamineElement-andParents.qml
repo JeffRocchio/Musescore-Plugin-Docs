@@ -197,7 +197,17 @@ MuseScore {
 			console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
 			console.log("");
 			showObject(oElementsList[i]);
-			showStaffObj(oElementsList[i]);
+			var parent = oElementsList[i].parent;
+			var watchdog = 10;
+			while (parent){
+				console.log("");
+				console.log("---- ---- PARENT is a || : ", parent.name, "||");
+				showObject(parent);
+				console.log("");
+				parent = parent.parent;
+				watchdog--;
+				if(watchdog <0) break;
+			}
 			console.log("\n");
 			console.log("---- END Element# [", i, "]");
 			console.log("------------------------------------------------------------------------");

@@ -1,0 +1,41 @@
+## Background
+
+I have needed to add fingering text to individual notes. For me this is because when I reformat/resize the staff "Staff Text" doesn't stay associated to, and aligned with, the specific notes I need the text to be next to. But fingering text is specifically associated to individual notes and so, when reformatting a staff, that text does tend to stay in alignment with the notes.
+
+## Procedure
+
+Because fingering text elements are child elements of individual notes, adding them is a bit different that adding Staff Text, or other elemnts that you just add at the current cursor location.
+
+You add fingering as a new element that you add to a specific note object. It is quite simple, as long as you can obtain the desired note object in your code. Below is the procedure:
+
+<qml>
+//Assume user has selected a single note in the score
+var oNote = curScore.selection.elements[0];
+var half = newElement(Element.FINGERING);
+half.text = "FG";
+half.color = "#aa0000";
+curScore.selection.elements[0].add(half);
+//Here's an odd thing - you have to set the x,y offset 
+//properties **after** you have added the fingering object 
+//to the note. If you set them prior to adding, like I did
+//for the color above, they don't seem to have any effect.
+//I personally cannot explain this difference in behavior.
+half.offsetX = 2.00;
+half.offsetY = -0.44;
+</qml>
+&nbsp;
+
+When you run the above code on a score where you have selected a single note you will see the (red) text 'FG' appear next to the note.
+
+## Plugin Example
+
+For a complete plugin example, and a test score to use with it, see:
+
+[Musescore-Plugin-Docs]()
+[Score: Test - Add Fingering Text]()
+
+
+&nbsp;
+## References
+
+[Doxygen Documentation for Note | elements](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/class_ms_1_1_plugin_a_p_i_1_1_note.html#a57b9543b1da324db238953503fa4d32a)
