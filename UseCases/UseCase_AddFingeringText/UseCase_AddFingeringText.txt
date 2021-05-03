@@ -4,24 +4,24 @@ I have needed to add fingering text to individual notes. For me this is because 
 
 ## Procedure
 
-Because fingering text elements are child elements of individual notes, adding them is a bit different that adding Staff Text, or other elemnts that you just add at the current cursor location.
+Because fingering text elements are child elements of individual notes, adding them is a bit different than adding Staff Text, or other elements that you just add at the current cursor location.
 
 You add fingering as a new element that you add to a specific note object. It is quite simple, as long as you can obtain the desired note object in your code. Below is the procedure:
 
 <qml>
 //Assume user has selected a single note in the score
 var oNote = curScore.selection.elements[0];
-var half = newElement(Element.FINGERING);
-half.text = "FG";
-half.color = "#aa0000";
-curScore.selection.elements[0].add(half);
+var finger = newElement(Element.FINGERING);
+finger.text = "FG";
+finger.color = "#aa0000";
+curScore.selection.elements[0].add(finger);
 //Here's an odd thing - you have to set the x,y offset 
 //properties **after** you have added the fingering object 
 //to the note. If you set them prior to adding, like I did
 //for the color above, they don't seem to have any effect.
 //I personally cannot explain this difference in behavior.
-half.offsetX = 2.00;
-half.offsetY = -0.44;
+finger.offsetX = 2.00;
+finger.offsetY = -0.44;
 </qml>
 &nbsp;
 
@@ -31,11 +31,10 @@ When you run the above code on a score where you have selected a single note you
 
 For a complete plugin example, and a test score to use with it, see:
 
-[Musescore-Plugin-Docs]()
-[Score: Test - Add Fingering Text]()
+[Add fingering text plugin](https://github.com/JeffRocchio/Musescore-Plugin-Docs/blob/main/UseCases/UseCase_AddFingeringText/REFcode_Add-fingering-text.qml)
+[Score: Test - Add Fingering Text](https://github.com/JeffRocchio/Musescore-Plugin-Docs/blob/main/UseCases/UseCase_AddFingeringText/TEST_Add-fingering-text.mscz)
 
 
-&nbsp;
 ## References
 
 [Doxygen Documentation for Note | elements](https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/class_ms_1_1_plugin_a_p_i_1_1_note.html#a57b9543b1da324db238953503fa4d32a)

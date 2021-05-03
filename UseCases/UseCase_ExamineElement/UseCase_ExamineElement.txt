@@ -13,6 +13,7 @@ I have found it helpful to be able to click on some item in a score and examine 
 ## The Plugin
 
 Obtain plugin from [Musescore-Plugin-Docs](https://github.com/JeffRocchio/Musescore-Plugin-Docs/blob/main/UseCases/UseCase_ExamineElement/REFcode_ExamineElement_Simple.qml)
+There is also a version that will crawl up the examined object's parent tree: [REFcode_ExamineElement-andParents.qml](https://github.com/JeffRocchio/Musescore-Plugin-Docs/blob/main/UseCases/UseCase_ExamineElement/REFcode_ExamineElement-andParents.qml)
 
 Here is the plugin's code:
 <qml>
